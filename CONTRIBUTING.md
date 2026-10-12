@@ -12,9 +12,14 @@ uv sync  # .venv/ を作成し、依存をインストール
 | やりたいこと | コマンド |
 | --- | --- |
 | CLI を実行 | `uv run fastship` |
-| 依存を追加 | `uv add <package>` |
 | 開発用依存を追加 | `uv add --dev <package>` |
 | Python REPL | `uv run python` |
+
+## 依存パッケージを追加しない
+
+fastship は標準ライブラリだけで書きます (`[project] dependencies` は空のまま)。
+`install.sh` は `uv tool install` で入れるので `uv.lock` が効きません。依存があると、その新しい版 (乗っ取られた版を含む) が、このリポジトリのレビューを通らずに全員の端末へ入ってしまいます。
+開発用の依存 (`uv add --dev`) は配布物に入らないので使ってかまいません。
 
 ## リリース
 
