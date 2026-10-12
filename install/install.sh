@@ -44,7 +44,8 @@ esac
 if [ "$os-$arch" = darwin-x64 ] && [ "$(sysctl -n hw.optional.arm64 2>/dev/null)" = 1 ]; then
   arch=arm64
 fi
-if [ "$os" = linux ] && ldd --version 2>&1 | grep -qi musl; then
+# musl の ldd --version は exit 1 で終わるので、pipefail で判定が偽にならないよう終了コードを捨てる
+if [ "$os" = linux ] && { ldd --version 2>&1 || true; } | grep -qi musl; then
   fail "musl libc (Alpine など) には対応していません"
 fi
 

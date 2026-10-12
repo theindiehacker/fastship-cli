@@ -55,7 +55,13 @@ try {
     }
 
     New-Item -ItemType Directory -Force -Path $installDir | Out-Null
-    Move-Item -Force $file $bin
+    # 実行中の exe は上書きも削除もできないが、リネームはできる。
+    # 別のセッションで fastship が動いていても更新できるよう、今の exe を退避してから置く。
+    # 退避したものは次回以降に消す (まだ動いていて消せないものは残し、名前が重ならないよう毎回別の名前にする)
+    Get-ChildItem -Path $installDir -Filter 'fastship.exe.*.old' -ErrorAction SilentlyContinue |
+        Remove-Item -Force -ErrorAction SilentlyContinue
+    if (Test-Path $bin) { Move-Item $bin "$bin.$([IO.Path]::GetRandomFileName()).old" }
+    Move-Item $file $bin
     Write-Host "fastship: $bin に $latest をインストールしました"
 } finally {
     Remove-Item -Recurse -Force $tmp -ErrorAction SilentlyContinue
