@@ -51,11 +51,7 @@ fastship fix
         "hooks": [
           {
             "type": "command",
-            "command": "fastship fix"
-          },
-          {
-            "type": "command",
-            "command": "fastship check"
+            "command": "fastship fix && fastship check"
           }
         ]
       }
