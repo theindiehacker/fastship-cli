@@ -26,3 +26,6 @@ dev = [
 [tool.deptry]
 # src/fastship/__main__.py (PyInstaller のエントリ) が自分のパッケージを import するため
 known_first_party = ["fastship"]
+
+[tool.mypy]
+files = ["src"]
