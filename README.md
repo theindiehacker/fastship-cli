@@ -5,8 +5,6 @@ FastShip CLI は、セキュリティチェック・リント・フォーマッ�
 
 ## 💻 インストール
 
-[uv](https://docs.astral.sh/uv/) が無ければ一緒に入ります。Python は uv が用意するので、事前に入れる必要はありません (git は必要です)。
-
 <details><summary><b>macOS、Linux、WSL</b></summary>
 
 ```bash
@@ -23,8 +21,6 @@ irm https://raw.githubusercontent.com/theindiehacker/fastship-cli/main/install/i
 ```
 
 </details>
-
-2 回目以降に実行すると、最新の main への更新をバックグラウンドで行います (次に起動したときから反映されます)。
 
 ## 🪄 使い方
 
