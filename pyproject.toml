@@ -1,7 +1,7 @@
 [project]
 name = "fastship"
 version = "0.1.0"
-description = "Add your description here"
+description = "セキュリティチェック・リント・フォーマットチェックを行う CLI"
 readme = "README.md"
 authors = [
     { name = "gtaiyou24", email = "gtaiyou24@gmail.com" }
@@ -17,15 +17,6 @@ fastship = "fastship:main"
 [build-system]
 requires = ["uv_build>=0.11.14,<0.12.0"]
 build-backend = "uv_build"
-
-[dependency-groups]
-dev = [
-    "pyinstaller>=6.22.3",
-]
-
-[tool.deptry]
-# src/fastship/__main__.py (PyInstaller のエントリ) が自分のパッケージを import するため
-known_first_party = ["fastship"]
 
 [tool.mypy]
 files = ["src"]

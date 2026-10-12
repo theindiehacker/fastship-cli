@@ -5,10 +5,12 @@ FastShip CLI は、セキュリティチェック・リント・フォーマッ�
 
 ## 💻 インストール
 
+[uv](https://docs.astral.sh/uv/) が無ければ一緒に入ります。Python は uv が用意するので、事前に入れる必要はありません (git は必要です)。
+
 <details><summary><b>macOS、Linux、WSL</b></summary>
 
 ```bash
-curl -fsSL https://registry.fastship.jp/cli/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/theindiehacker/fastship-cli/main/install/install.sh | bash
 ```
 
 </details>
@@ -16,16 +18,13 @@ curl -fsSL https://registry.fastship.jp/cli/install.sh | bash
 <details><summary><b>Windows</b></summary>
 
 Windows PowerShell:
-```bash
-irm https://registry.fastship.jp/cli/install.ps1 | iex
-```
-
-Windows CMD:
-```bash
-curl -fsSL https://registry.fastship.jp/cli/install.cmd -o install.cmd && install.cmd && del install.cmd
+```powershell
+irm https://raw.githubusercontent.com/theindiehacker/fastship-cli/main/install/install.ps1 | iex
 ```
 
 </details>
+
+2 回目以降に実行すると、最新の main への更新をバックグラウンドで行います (次に起動したときから反映されます)。
 
 ## 🪄 使い方
 
@@ -45,7 +44,7 @@ fastship fix
         "hooks": [
           {
             "type": "command",
-            "command": "curl -fsSL https://registry.fastship.jp/cli/install.sh | bash"
+            "command": "curl -fsSL https://raw.githubusercontent.com/theindiehacker/fastship-cli/main/install/install.sh | bash"
           }
         ]
       }
