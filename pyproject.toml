@@ -22,3 +22,7 @@ build-backend = "uv_build"
 dev = [
     "pyinstaller>=6.22.3",
 ]
+
+[tool.deptry]
+# src/fastship/__main__.py (PyInstaller のエントリ) が自分のパッケージを import するため
+known_first_party = ["fastship"]
