@@ -1,0 +1,21 @@
+# jetbrain
+.idea/
+
+# VSCode
+.vscode/
+
+# credential
+.env
+
+.DS_Store
+
+# Taskfile
+.task/
+
+# mise
+.mise.local.toml
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
