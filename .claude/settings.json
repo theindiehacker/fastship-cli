@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -fsSL https://raw.githubusercontent.com/theindiehacker/devops/v1.4.1/scripts/claude-web-setup.sh | bash"
+          }
+        ]
+      }
+    ]
+  }
+}
