@@ -15,6 +15,21 @@ bin="$install_dir/fastship"
 info() { echo "fastship: $*" >&2; }
 fail() { info "$*"; exit 1; }
 
+installed=""
+if [ -x "$bin" ]; then
+  installed=$("$bin" --version 2>/dev/null || true)
+fi
+
+# registry が応答しないときに SessionStart を待たせ続けないよう、時間を区切る
+if ! latest=$(curl -fsSL --connect-timeout 5 --max-time 10 "$base_url/latest"); then
+  [ -n "$installed" ] && { info "最新のバージョンを確かめられませんでした。$installed を使い続けます"; exit 0; }
+  fail "最新のバージョンを取得できませんでした: $base_url/latest"
+fi
+if [ "$installed" = "$latest" ]; then
+  exit 0
+fi
+
+# OS と CPU の判定は、更新するときにだけ要る
 case "$(uname -s)" in
   Darwin) os=darwin ;;
   Linux) os=linux ;;
@@ -33,26 +48,14 @@ if [ "$os" = linux ] && ldd --version 2>&1 | grep -qi musl; then
   fail "musl libc (Alpine など) には対応していません"
 fi
 
-installed=""
-if [ -x "$bin" ]; then
-  installed=$("$bin" --version 2>/dev/null || true)
-fi
-
-if ! latest=$(curl -fsSL "$base_url/latest"); then
-  [ -n "$installed" ] && { info "最新のバージョンを確かめられませんでした。$installed を使い続けます"; exit 0; }
-  fail "最新のバージョンを取得できませんでした: $base_url/latest"
-fi
-if [ "$installed" = "$latest" ]; then
-  exit 0
-fi
-
 asset="fastship-$os-$arch"
-tmp=$(mktemp -d)
+# 実行中のバイナリを壊さないよう、同じディレクトリ (同じファイルシステム) に落としてから mv で差し替える
+mkdir -p "$install_dir"
+tmp=$(mktemp -d "$install_dir/.fastship.XXXXXX")
 trap 'rm -rf "$tmp"' EXIT
 
 info "$latest をインストールします ($asset)"
-curl -fsSL -o "$tmp/$asset" "$base_url/$latest/$asset"
-curl -fsSL -o "$tmp/SHA256SUMS" "$base_url/$latest/SHA256SUMS"
+curl -fsSL -o "$tmp/$asset" "$base_url/$latest/$asset" -o "$tmp/SHA256SUMS" "$base_url/$latest/SHA256SUMS"
 
 expected=$(awk -v f="$asset" '$2 == f || $2 == "*" f { print $1 }' "$tmp/SHA256SUMS")
 if command -v sha256sum >/dev/null; then
@@ -60,13 +63,10 @@ if command -v sha256sum >/dev/null; then
 else
   actual=$(shasum -a 256 "$tmp/$asset" | cut -d' ' -f1)
 fi
-[ -n "$expected" ] && [ "$expected" = "$actual" ] || fail "チェックサムが一致しません: $asset"
+[ "$expected" = "$actual" ] || fail "チェックサムが一致しません: $asset"
 
-mkdir -p "$install_dir"
 chmod +x "$tmp/$asset"
-# 実行中のバイナリを壊さないよう、同じディレクトリに置いてから mv で差し替える
-cp "$tmp/$asset" "$bin.tmp.$$"
-mv -f "$bin.tmp.$$" "$bin"
+mv -f "$tmp/$asset" "$bin"
 info "$bin に $latest をインストールしました"
 
 case ":$PATH:" in

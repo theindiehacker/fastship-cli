@@ -24,7 +24,7 @@ if (Test-Path $bin) {
 }
 
 try {
-    $latest = (Invoke-RestMethod "$baseUrl/latest").Trim()
+    $latest = (Invoke-RestMethod "$baseUrl/latest" -TimeoutSec 10).Trim()
 } catch {
     if ($installed) {
         Write-Warning "fastship: 最新のバージョンを確かめられませんでした。$installed を使い続けます"
@@ -37,8 +37,9 @@ if ($installed -eq $latest) { return }
 $tmp = Join-Path ([IO.Path]::GetTempPath()) ([IO.Path]::GetRandomFileName())
 New-Item -ItemType Directory -Path $tmp | Out-Null
 try {
+    $file = Join-Path $tmp $asset
     Write-Host "fastship: $latest をインストールします ($asset)"
-    Invoke-WebRequest "$baseUrl/$latest/$asset" -OutFile (Join-Path $tmp $asset) -UseBasicParsing
+    Invoke-WebRequest "$baseUrl/$latest/$asset" -OutFile $file -UseBasicParsing
     $sums = (Invoke-WebRequest "$baseUrl/$latest/SHA256SUMS" -UseBasicParsing).Content
     if ($sums -is [byte[]]) { $sums = [Text.Encoding]::UTF8.GetString($sums) }
 
@@ -48,13 +49,13 @@ try {
         $fields = $line.Trim() -split '\s+'
         if ($fields.Count -eq 2 -and $fields[1].TrimStart('*') -eq $asset) { $expected = $fields[0] }
     }
-    $actual = (Get-FileHash (Join-Path $tmp $asset) -Algorithm SHA256).Hash
-    if (-not $expected -or $expected -ne $actual) {
+    $actual = (Get-FileHash $file -Algorithm SHA256).Hash
+    if ($expected -ne $actual) {
         throw "fastship: チェックサムが一致しません: $asset"
     }
 
     New-Item -ItemType Directory -Force -Path $installDir | Out-Null
-    Move-Item -Force (Join-Path $tmp $asset) $bin
+    Move-Item -Force $file $bin
     Write-Host "fastship: $bin に $latest をインストールしました"
 } finally {
     Remove-Item -Recurse -Force $tmp -ErrorAction SilentlyContinue
